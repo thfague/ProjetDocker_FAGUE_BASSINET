@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  reverseproxy:
+    container_name: reverseproxy
+    build: .
+    links:
+      - sitea
+      - siteb
+      - wordpress
+    ports:
+      - 8080:80
+  sitea:
+    build: ./siteA/
+
+  siteb:
+    build: ./siteB/
+
+  wordpress:
+    image: wordpress:latest
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: 4815
+      WORDPRESS_DB_NAME: mysql
+    networks:
+      - wpdbnet
+      - default
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 4815
+    networks:
+      - wpdbnet
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: 4815
+      WORDPRESS_DB_NAME: mysql
+    networks:
+      - wpdbnet
+      - default
+
+networks:
+  wpdbnet:
